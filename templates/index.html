@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Video Analyzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #f4efe8;
+            --bg-2: #e7ded2;
+            --card: #fffefc;
+            --text: #1f1c17;
+            --muted: #6d665b;
+            --primary: #0f766e;
+            --primary-hover: #0c5d57;
+            --border: #ded6cb;
+            --highlight-bg: #fff4cc;
+            --highlight-border: #efc84a;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Source Sans 3", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(900px 500px at 15% -10%, #fff8eb 0%, transparent 60%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            min-height: 100vh;
+            padding: 28px 16px;
+        }
+
+        .app-shell {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: rise 500ms ease-out;
+        }
+
+        .panel-header {
+            padding: 28px 28px 18px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #fffefb, #f9f4ec);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(1.6rem, 3vw, 2.1rem);
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: 1.02rem;
+        }
+
+        .content {
+            padding: 24px 28px 30px;
+        }
+
+        .upload-section {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #27231d;
+        }
+
+        .file-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="file"] {
+            flex: 1 1 260px;
+            border: 1px dashed #b8aea0;
+            background: #fffcf6;
+            border-radius: 10px;
+            padding: 10px;
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font: 600 0.98rem "Space Grotesk", sans-serif;
+            letter-spacing: 0.01em;
+            color: #f7fdfc;
+            background: var(--primary);
+            cursor: pointer;
+            transition: transform 150ms ease, background-color 150ms ease;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .tip {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .divider {
+            border: 0;
+            border-top: 1px solid var(--border);
+            margin: 22px 0;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
+        }
+
+        .results {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .results li {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            line-height: 1.45;
+        }
+
+        .results .highlight {
+            background: var(--highlight-bg);
+            border-color: var(--highlight-border);
+        }
+
+        .timestamp {
+            color: #7a7266;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 0.88rem;
+            min-width: 58px;
+        }
+
+        .empty-state {
+            margin: 0;
+            color: var(--muted);
+            background: #fcfaf6;
+            border: 1px dashed #c9bead;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .panel-header,
+            .content {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .file-row {
+                align-items: stretch;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .results li {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .timestamp {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<main class="app-shell">
+    <section class="panel">
+        <header class="panel-header">
+            <h1>AI Video Analyzer</h1>
+            <p class="subtitle">Upload a video to generate transcript insights with highlighted moments.</p>
+        </header>
+
+        <div class="content">
+            <form action="/upload" method="post" enctype="multipart/form-data" class="upload-section">
+                <label for="video-file">Choose video file</label>
+                <div class="file-row">
+                    <input id="video-file" type="file" name="file" required>
+                    <button type="submit">Analyze Video</button>
+                </div>
+                <p class="tip">Supported formats depend on your backend processing setup.</p>
+            </form>
+
+            <hr class="divider">
+
+            <h2>Transcript Results</h2>
+
+            {% if results %}
+                <ul class="results">
+                {% for item in results %}
+                    <li class="{{ 'highlight' if item.highlight else '' }}">
+                        <span class="timestamp">[{{ item.start }}]</span>
+                        <span>{{ item.text }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">Your transcript will appear here after uploading and analyzing a video.</p>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
